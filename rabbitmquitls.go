@@ -22,7 +22,7 @@ func (i *rabbitMQ) Close() {
 	failOnError(i.Conn.Close())
 }
 
-func declareQueue (ch *amqp.Channel, key string) (amqp.Queue, error){
+func declareQueue(ch *amqp.Channel, key string) (amqp.Queue, error) {
 	return ch.QueueDeclare(
 		key,
 		false,
@@ -83,7 +83,6 @@ func (i *rabbitMQ) Receive(queue string) (<-chan amqp.Delivery, error) {
 	)
 }
 
-
 func NewRabbitMQ(connect string) rabbitMQ {
 	conn, err := amqp.Dial(connect)
 	failOnError(err)
@@ -93,5 +92,3 @@ func NewRabbitMQ(connect string) rabbitMQ {
 
 	return rabbitMQ{Conn: conn, Channel: channel, Query: make(map[string]amqp.Queue)}
 }
-
-//var RabbitMQ rabbitMQ
