@@ -11,11 +11,15 @@ func failOnError(err error) {
 	}
 }
 
-
 type rabbitMQ struct {
 	Conn    *amqp.Connection
 	Channel *amqp.Channel
 	Query   []amqp.Queue
+}
+
+func (i *rabbitMQ) Close() {
+	failOnError(i.Channel.Close())
+	failOnError(i.Conn.Close())
 }
 
 func (i *rabbitMQ) NewQueue(key string) {
@@ -61,6 +65,4 @@ func NewRabbitMQ(connect string) rabbitMQ {
 	return rabbitMQ{Conn: conn, Channel: channel}
 }
 
-
 //var RabbitMQ rabbitMQ
-
