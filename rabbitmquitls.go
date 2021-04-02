@@ -76,7 +76,7 @@ func (i *rabbitMQ) Receive(queue string) (<-chan amqp.Delivery, error) {
 	return i.Channel.Consume(
 		queue, // queue
 		"",
-		true,
+		false,
 		false,
 		false,
 		false,
