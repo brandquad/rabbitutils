@@ -91,7 +91,7 @@ func NewRabbitMQ(connect string) rabbitMQ {
 	channel, err := conn.Channel()
 	failOnError(err)
 
-	return rabbitMQ{Conn: conn, Channel: channel}
+	return rabbitMQ{Conn: conn, Channel: channel, Query: make(map[string]amqp.Queue)}
 }
 
 //var RabbitMQ rabbitMQ
