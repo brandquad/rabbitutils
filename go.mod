@@ -1,4 +1,4 @@
-module brandquad.io/rabbitmqutils
+module github.com/brandquad/rabbitutils
 
 go 1.16
 
