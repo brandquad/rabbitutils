@@ -55,6 +55,7 @@ func (i *rabbitMQ) Publish(queue string, body interface{}, contenttype string) {
 		false,
 		false,
 		amqp.Publishing{
+			ReplyTo: queue,
 			ContentType: contenttype,
 			Body:        byteBody,
 		})
