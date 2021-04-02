@@ -52,8 +52,22 @@ func (i *rabbitMQ) Publish(queue string, body interface{}, contenttype string) {
 			ContentType: contenttype,
 			Body:        byteBody,
 		})
+
 	failOnError(err)
 }
+
+func (i *rabbitMQ) Receive(queue string) (<-chan amqp.Delivery, error) {
+	return i.Channel.Consume(
+		queue, // queue
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+}
+
 
 func NewRabbitMQ(connect string) rabbitMQ {
 	conn, err := amqp.Dial(connect)
