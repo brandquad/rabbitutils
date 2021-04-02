@@ -14,7 +14,7 @@ func failOnError(err error) {
 type rabbitMQ struct {
 	Conn    *amqp.Connection
 	Channel *amqp.Channel
-	Query   []amqp.Queue
+	Query   map[string]amqp.Queue
 }
 
 func (i *rabbitMQ) Close() {
@@ -22,8 +22,8 @@ func (i *rabbitMQ) Close() {
 	failOnError(i.Conn.Close())
 }
 
-func (i *rabbitMQ) NewQueue(key string) {
-	q, err := i.Channel.QueueDeclare(
+func declareQueue (ch *amqp.Channel, key string) (amqp.Queue, error){
+	return ch.QueueDeclare(
 		key,
 		false,
 		false,
@@ -31,8 +31,14 @@ func (i *rabbitMQ) NewQueue(key string) {
 		false,
 		nil,
 	)
+}
+
+func (i *rabbitMQ) NewQueue(queue string) {
+	q, err := declareQueue(i.Channel, queue)
 	failOnError(err)
-	i.Query = append(i.Query, q)
+	if _, exists := i.Query[queue]; exists == false {
+		i.Query[queue] = q
+	}
 }
 
 func (i *rabbitMQ) Publish(queue string, body interface{}, contenttype string) {
@@ -57,6 +63,15 @@ func (i *rabbitMQ) Publish(queue string, body interface{}, contenttype string) {
 }
 
 func (i *rabbitMQ) Receive(queue string) (<-chan amqp.Delivery, error) {
+	q, err := declareQueue(i.Channel, queue)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, exists := i.Query[queue]; exists == false {
+		i.Query[queue] = q
+	}
+
 	return i.Channel.Consume(
 		queue, // queue
 		"",
